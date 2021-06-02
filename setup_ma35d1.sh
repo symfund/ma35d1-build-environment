@@ -29,7 +29,7 @@ sudo apt autoremove
 
 # System
 # Speed Slow way
-SysTools="open-vm-tools openssh-server nfs-kernel-server net-tools curl git build-essential"
+SysTools="open-vm-tools openssh-server nfs-kernel-server net-tools curl git"
 echo "System Tools Installing ..."
 
 # Fast Installing
@@ -44,9 +44,7 @@ sudo apt install --yes $SysTools
 # Speed Slow
 echo "Yocto Tools Installing ..."
 
-YoctoToolsAlt="gawk wget git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev pylint3 xterm python3-subunit mesa-common-dev"
-
-YoctoTools="gawk wget diffstat unzip texinfo gcc-multilib chrpath socat cpio python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev pylint3 xterm python3-subunit mesa-common-dev"
+YoctoTools="gawk wget git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev pylint3 xterm python3-subunit mesa-common-dev"
 
 # Fast Installing
 sudo apt install --yes $YoctoTools
@@ -74,6 +72,7 @@ sudo apt install --yes $Ma35d1Tools
 #  sudo apt install --yes $sw
 #done
 
+# uncomment to install Docker
 # Docker 
 # if [ ! -d ~/Projects/MA35D1_Docker_Script ]; then
 #  mkdir -p ~/Projects/MA35D1_Docker_Script
