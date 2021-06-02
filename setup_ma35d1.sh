@@ -20,6 +20,7 @@ script_full_path=$(dirname "$0")
 echo "script name: $script_name"
 echo "full path: $script_full_path"
 
+# Force uninstalling unnecessary packages to accelerate system update
 sudo apt --purge remove firefox* thunderbird* libreoffice* rhythmbox*
 sudo apt autoremove
 
@@ -27,28 +28,27 @@ sudo apt update
 sudo apt upgrade 
 sudo apt autoremove
 
-# System
-# Speed Slow way
+# System tools
 SysTools="open-vm-tools openssh-server nfs-kernel-server net-tools curl git"
 echo "System Tools Installing ..."
 
 # Fast Installing
 sudo apt install --yes $SysTools
 
+# The following install way is considerably slow!
 #for sw in $SysTools1; do
 #  echo "${RED}installing $sw ...${NC}"
 #  sudo apt install --yes $sw 
 #done
 
-# for Yocto
-# Speed Slow
+# Yocto standard tools
 echo "Yocto Tools Installing ..."
-
 YoctoTools="gawk wget git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev pylint3 xterm python3-subunit mesa-common-dev"
 
 # Fast Installing
 sudo apt install --yes $YoctoTools
 
+# The following install way is considerably slow!
 #for sw in $YoctoTools1; do
 #  echo "${RED}installing $sw ...${NC}"
 #  sudo apt install --yes $sw
@@ -58,8 +58,7 @@ sudo apt install --yes $YoctoTools
 #echo "sleep 5 days ..."
 #sleep 5d
 
-# MA35D1
-# Speed Slow
+# MA35D1 tools
 echo "Ma35d1 Tools Installing ..."
 # xvfb is required as recipe m4proj uses NuEclipse from command line to compile Eclipse-based sample projects
 Ma35d1Tools="python autoconf automake cvs subversion flex bison u-boot-tools libssl-dev libncurses5-dev xvfb"
@@ -67,6 +66,7 @@ Ma35d1Tools="python autoconf automake cvs subversion flex bison u-boot-tools lib
 # Fast Installing
 sudo apt install --yes $Ma35d1Tools
 
+# The following install way is considerably slow!
 #for sw in $Ma35d1Tools1; do
 #  echo "${RED}installing $sw ...${NC}"
 #  sudo apt install --yes $sw
