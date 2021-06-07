@@ -36,7 +36,7 @@ echo "System Tools Installing ..."
 sudo apt install --yes $SysTools
 
 # The following install way is considerably slow!
-#for sw in $SysTools1; do
+#for sw in $SysTools; do
 #  echo "${RED}installing $sw ...${NC}"
 #  sudo apt install --yes $sw 
 #done
@@ -49,7 +49,7 @@ YoctoTools="gawk wget git-core diffstat unzip texinfo gcc-multilib build-essenti
 sudo apt install --yes $YoctoTools
 
 # The following install way is considerably slow!
-#for sw in $YoctoTools1; do
+#for sw in $YoctoTools; do
 #  echo "${RED}installing $sw ...${NC}"
 #  sudo apt install --yes $sw
 #done
@@ -150,3 +150,7 @@ fi
 
 cd ~/Projects/yocto
 repo sync
+
+# Now, begin build full functionality image for machine ma35d1-evb
+DISTRO=nvt-ma35d1-directfb MACHINE=ma35d1-evb source sources/init-build-env build
+bitbake nvt-image-qt5
