@@ -94,13 +94,32 @@ fi
 # commands do not return values - they output them. You can capture this output by using command subsititution; e.g. $(ls -A)
 if [ `git config user.email` ]; then
 
+  strHeader=" ________________________________________________________"
+  sizeStrHeader=${#strHeader}
+
+  str2="| E-mail: $(git config user.email)"
+  str3="| Name:   $(git config user.name)"
+  sizeStr2=${#str2}
+  sizeStr3=${#str3}
+
   echo 
   echo  " ________________________________________________________"
   echo  "|                                                       |"
   echo  "|                     Git Account                       |"
   echo  "|                                                       |"
-  echo  "| E-mail: $(git config user.email)                      |"
-  echo  "| Name:   $(git config user.name)                       |"
+  echo -n  "| E-mail: $(git config user.email)"
+
+  start=1
+  let end=sizeStrHeader-sizeStr2-1
+  for ((i=$start; i<=$end; i++)); do echo -n " "; done
+  echo "|" 
+
+  echo -n  "| Name:   $(git config user.name)"
+  
+  let end=sizeStrHeader-sizeStr3-1
+  for ((i=$start; i<=$end; i++)); do echo -n " "; done
+  echo "|"
+
   echo  "|                                                       |"
   echo  "|_______________________________________________________|"
   echo 
