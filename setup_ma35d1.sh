@@ -1,5 +1,13 @@
 # !/bin/sh
 
+
+# To run this script, 'source script'
+# source setup_ma35d1.sh
+
+# or in this way, 'dot script'
+# . setup_ma35d1.sh
+
+
 # Colors
 # =========================================
 # BLACK	0;30 DARK GRAY		1;30
@@ -14,11 +22,13 @@
 RED='\033[0;31m'
 NC='\033[0m'
 
+
 script_name=$0
 script_full_path=$(dirname "$0")
 
-echo "script name: $script_name"
-echo "full path: $script_full_path"
+#echo "script name: $script_name"
+#echo "full path: $script_full_path"
+
 
 # Force uninstalling unnecessary packages to accelerate system update
 sudo apt --purge remove firefox* thunderbird* libreoffice* rhythmbox*
@@ -149,8 +159,10 @@ if [ ! -d ~/Projects/yocto/source ]; then
 fi
 
 cd ~/Projects/yocto
-repo sync
+repo sync --force-sync
 
 # Now, begin build full functionality image for machine ma35d1-evb
 DISTRO=nvt-ma35d1-directfb MACHINE=ma35d1-evb source sources/init-build-env build
-bitbake nvt-image-qt5
+
+# bitbake nvt-image-qt5
+devtool build-image nvt-image-qt5
