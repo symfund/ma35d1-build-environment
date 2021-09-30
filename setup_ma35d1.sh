@@ -164,5 +164,5 @@ repo sync --force-sync
 # Now, begin build full functionality image for machine ma35d1-evb
 DISTRO=nvt-ma35d1-directfb MACHINE=ma35d1-evb source sources/init-build-env build
 
-# bitbake nvt-image-qt5
-devtool build-image nvt-image-qt5
+bitbake nvt-image-qt5
+# devtool build-image nvt-image-qt5
