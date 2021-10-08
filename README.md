@@ -15,7 +15,7 @@ Ubuntu Desktop 20.04 LTS 64-bit
 
 Usually, due to unstable network connection, this script often is executed unsuccessfully. Reexcuting this script again and again can make the build passed, but that is not recommended.
 
-If the script has synchronized the repository (repo sync --force-sync) without problem, following the below steps to make the build passed.
+If the script has synchronized the repository (repo sync --force-sync) without problem, follow the below steps to make the build passed.
 1. $ cd ~/Project/yocto
 2. DISTRO=nvt-ma35d1-directfb MACHINE=ma35d1-evb source sources/init-build-env build
 3. bitbake nvt-image-qt5
