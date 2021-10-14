@@ -159,7 +159,10 @@ if [ ! -d ~/Projects/yocto/source ]; then
 fi
 
 cd ~/Projects/yocto
-repo sync --force-sync
+until repo sync --force-sync
+do
+  echo waiting for repository synchronized
+done
 
 # Now, begin build full functionality image for machine ma35d1-evb
 DISTRO=nvt-ma35d1-directfb MACHINE=ma35d1-evb source sources/init-build-env build
