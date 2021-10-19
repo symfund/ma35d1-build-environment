@@ -10,16 +10,18 @@
 
 # Colors
 # =========================================
-# BLACK	0;30 DARK GRAY		1;30
+# BLACK		0;30 DARK GRAY		1;30
 # RED		0;31 LIGHT RED		1;31
-# GREEN	0;32 LIGHT GREEN	1;32
+# GREEN		0;32 LIGHT GREEN	1;32
 # ORANGE	0;33 YELLOW		1;33
 # BLUE		0;34 LIGHT		1;34
 # PURPLE	0;35 LIGHT PURPLE	1;35
-# CYAN		0;36 LIGHT CYAN	1;36
+# CYAN		0;36 LIGHT CYAN		1;36
 # LIGHTGRAY	0;37 WHITE		1;37
 
 RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
 NC='\033[0m'
 
 
@@ -159,17 +161,49 @@ if [ ! -d ~/Projects/yocto/source ]; then
 fi
 
 cd ~/Projects/yocto
-until repo sync --force-sync
+until repo sync --force-sync 
 do
-  echo waiting for repository synchronized
+  echo -e "${GREEN}repo sync failed, retry... ${NC}"
 done
+
+distro=nvt-ma35d1-directfb
+machine=ma35d1-evb
+
+echo -e "${YELLOW}Select which board to build ... i: IoT e: EVB s: SOM ${NC}" 
+echo -e "${GREEN}Type 'i', 'e', or 's' ...${NC}"
+
+while [ true ]; do
+  read -s -n 1 -t 15 k
+
+  case $k in
+    i* ) distro=nvt-ma35d1 machine=ma35d1-iot 
+         break 
+         ;;
+    e* ) distro=nvt-ma35d1-directfb machine=ma35d1-evb 
+         break 
+         ;;
+    s* ) distro=nvt-ma35d1 machine=ma35d1-som 
+         break 
+         ;;
+    *  ) echo -e " ${RED}No board specified, EVB board selected by default. ${NC} " 
+         break 
+         ;;
+  esac
+  
+done
+
+echo -e "${YELLOW}DISTRO: $distro, MACHINE: $machine${NC}"
+sleep 5s
 
 # Now, begin build full functionality image for machine ma35d1-evb
-DISTRO=nvt-ma35d1-directfb MACHINE=ma35d1-evb source sources/init-build-env build
+DISTRO=$distro MACHINE=$machine source sources/init-build-env build
 
-until bitbake nvt-image-qt5
+# Select image core-image-minimal nvt-image-qt5  
+imagename=nvt-image-qt5
+
+until bitbake $imagename 
 do
-  echo waiting for build complete
+  echo -e "${GREEN} bitbake $imagename failed. retry... ${NC}"
 done
 
-# devtool build-image nvt-image-qt5
+# devtool build-image $imagename
