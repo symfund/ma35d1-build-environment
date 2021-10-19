@@ -199,7 +199,11 @@ sleep 5s
 DISTRO=$distro MACHINE=$machine source sources/init-build-env build
 
 # Select image core-image-minimal nvt-image-qt5  
-imagename=nvt-image-qt5
+imagename=core-image-minimal
+
+if [[ "$machine" == "ma35d1-evb" ]]; then
+  imagename=nvt-image-qt5
+fi
 
 until bitbake $imagename 
 do
