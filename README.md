@@ -14,7 +14,7 @@ Ubuntu Desktop 20.04 LTS 64-bit
   * $ source setup_ma35d1.sh
 
 # Selecting board
-The MA35D1 yocto project supports three boards: IoT, EVB, and SOM.
+The MA35D1 yocto project supports three boards: **IoT**, **EVB**, and **SOM**.
 
 When the script prompts to select board, just type 'i' for IoT, 'e' for EVB, or 's' for SOM. By default, if user does not choose the board, EVB board will be selected. 
 
