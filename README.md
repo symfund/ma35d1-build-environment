@@ -18,6 +18,40 @@ The MA35D1 yocto project supports three boards: IoT, EVB, and SOM.
 
 When the script prompts to select board, just type 'i' for IoT, 'e' for EVB, or 's' for SOM. By default, if user does not choose the board, EVB board will be selected. 
 
+<table>
+  <thead>
+    <tr>
+      <th>BOARD</th>
+      <th>DISTRO</th>
+      <th>MACHINE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>EVB</td>
+      <td>nvt-ma35d1-directfb</td>
+      <td>ma35d1-evb</td>
+    </tr>
+   
+   <tr>
+      <td>IoT</td>
+      <td>nvt-ma35d1</td>
+      <td>ma35d1-iot</td>
+    </tr>
+   
+   <tr>
+      <td>SOM</td>
+      <td>nvt-ma35d1</td>
+      <td>ma35d1-som</td>
+    </tr>
+  
+
+  </tbody>
+</table>
+
+
+
+
 # Building issues
 Usually, due to unstable network connection, this script often is executed unsuccessfully. Reexcuting this script again and again can make the build passed, but that is not recommended.
 
