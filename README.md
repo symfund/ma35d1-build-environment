@@ -28,24 +28,26 @@ When the script prompts to select board, just type 'i' for IoT, 'e' for EVB, or 
   </thead>
   <tbody>
     <tr>
-      <td>EVB</td>
+      <td rowspan="2">EVB</td>
       <td>nvt-ma35d1-directfb</td>
-      <td>ma35d1-evb</td>
+      <td rowspan="2">ma35d1-evb</td>
     </tr>
+   <tr><td>core-image-minimal</td></tr>
    
    <tr>
-      <td>IoT</td>
+      <td rowspan="2">IoT</td>
       <td>nvt-ma35d1</td>
-      <td>ma35d1-iot</td>
+      <td rowspan="2">ma35d1-iot</td>
     </tr>
+   <tr><td>core-image-minimal</td></tr>
    
    <tr>
-      <td>SOM</td>
+      <td rowspan="2">SOM</td>
       <td>nvt-ma35d1</td>
-      <td>ma35d1-som</td>
+      <td rowspan="2">ma35d1-som</td>
     </tr>
+   <tr><td>core-image-minimal</td></tr>
   
-
   </tbody>
 </table>
 
