@@ -24,31 +24,37 @@ When the script prompts to select board, just type **'i' for IoT, 'e' for EVB, o
       <th>BOARD</th>
       <th>DISTRO</th>
       <th>MACHINE</th>
+      <th>IMAGE</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>EVB</td>
-      <td>nvt-ma35d1-directfb</td>
-      <td>ma35d1-evb</td>
+      <td rowspan="2">EVB</td>
+      <td rowspan="2">nvt-ma35d1-directfb</td>
+      <td rowspan="2">ma35d1-evb</td>
+      <td>nvt-image-qt5</td>
     </tr>
+    <tr><td>core-image-minimal</td></tr>
    
    <tr>
       <td>IOT</td>
       <td>nvt-ma35d1</td>
       <td>ma35d1-iot</td>
+      <td>core-image-minimal</td>
     </tr>
    
    <tr>
       <td>SOM</td>
       <td>nvt-ma35d1</td>
       <td>ma35d1-som</td>
+      <td>core-image-minimal</td>
     </tr>
   
   </tbody>
 </table>
 
-
+# Selecting image
+When EVB board is selected, there are two image choices **nvt-image-qt5** and **core-image-minimal** to be made.
 
 
 # Building issues
