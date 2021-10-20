@@ -4,7 +4,7 @@
 # Host OS
 Ubuntu Desktop 20.04 LTS 64-bit
 
-# Install
+# Installing
 1. Before installing Ubuntu Desktop 20.04 LTS 64-bit, disconnect the computer from network
 2. Install Ubuntu Desktop 20.04
 3. Connect the computer to network
@@ -13,6 +13,12 @@ Ubuntu Desktop 20.04 LTS 64-bit
   * $ chmod +x setup_ma35d1.sh
   * $ source setup_ma35d1.sh
 
+# Selecting board
+The MA35D1 yocto project supports three boards: IoT, EVB, and SOM.
+
+When the script prompts to select board, just type 'i' for IoT, 'e' for EVB, or 's' for SOM. By default, if user does not choose the board, EVB board will be selected. 
+
+# Building issues
 Usually, due to unstable network connection, this script often is executed unsuccessfully. Reexcuting this script again and again can make the build passed, but that is not recommended.
 
 If the script has synchronized the repository (repo sync --force-sync) without problem, open another terminal (press Ctrl + Alt + T or Ctrl + Shift + I) and follow the below steps to make the build passed.
