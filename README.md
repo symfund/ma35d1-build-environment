@@ -10,8 +10,11 @@ Ubuntu Desktop 20.04 LTS 64-bit
 3. Connect the computer to network
 4. Fetch this script
 5. Execute this script
-  * $ chmod +x setup_ma35d1.sh
-  * $ source setup_ma35d1.sh
+
+```bash
+  $ chmod +x setup_ma35d1.sh
+  $ source setup_ma35d1.sh
+```
 
 # Selecting board
 The MA35D1 yocto project supports three boards: **IoT**, **EVB**, and **SOM**.
@@ -62,8 +65,10 @@ Usually, due to unstable network connection, this script often is executed unsuc
 
 If the script has synchronized the repository (repo sync --force-sync) without problem, open another terminal (press Ctrl + Alt + T or Ctrl + Shift + I) and follow the below steps to make the build passed.
 
-1. $ cd ~/Project/yocto
-2. DISTRO=nvt-ma35d1-directfb MACHINE=ma35d1-evb source sources/init-build-env build
-3. bitbake nvt-image-qt5
+```bash
+$ cd ~/Project/yocto
+DISTRO=nvt-ma35d1-directfb MACHINE=ma35d1-evb source sources/init-build-env build
+bitbake nvt-image-qt5
+```
 
 Do 'bitbake nvt-image-qt5' again and again until the final image is generated out! Note that this script uses shell command 'until bitbake nvt-image-qt5' to ensure the image is built out.
