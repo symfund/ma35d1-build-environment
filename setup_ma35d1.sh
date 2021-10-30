@@ -205,9 +205,12 @@ if [[ "$machine" == "ma35d1-evb" ]]; then
   imagename=nvt-image-qt5
 fi
 
-until bitbake $imagename 
-do
+until bitbake $imagename; do
   echo -e "${GREEN} bitbake $imagename failed. retry... ${NC}"
+done
+
+until bitbake $imagename -c populate_sdk; do
+  echo -e "${RED}populate SDK for ${imagename} failed. retry...${NC}"
 done
 
 # devtool build-image $imagename
