@@ -12,7 +12,6 @@ Ubuntu Desktop 20.04 LTS 64-bit
 5. Execute this script
 
 ```bash
-  $ chmod +x setup_ma35d1.sh
   $ source setup_ma35d1.sh
 ```
 
