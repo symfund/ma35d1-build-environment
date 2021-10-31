@@ -207,10 +207,12 @@ fi
 
 until bitbake $imagename; do
   echo -e "${GREEN} bitbake $imagename failed. retry... ${NC}"
+  sleep 5s
 done
 
 until bitbake $imagename -c populate_sdk; do
   echo -e "${RED}populate SDK for ${imagename} failed. retry...${NC}"
+  sleep 5s
 done
 
 # devtool build-image $imagename
