@@ -58,6 +58,8 @@ When the script prompts to select board, just type **'i' for IoT, 'e' for EVB, o
 # Selecting image
 When EVB board is selected, there are two image choices **nvt-image-qt5** and **core-image-minimal** to be made.
 
+# Generating SDK
+Once the image is built out, the script will generate SDK for individual developer. Developers can use the standalone SDK toolchain on another machine to develop software with the same root filesystem content as the target device.
 
 # Building issues
 Usually, due to unstable network connection, this script often is executed unsuccessfully. Reexcuting this script again and again can make the build passed, but that is not recommended.
