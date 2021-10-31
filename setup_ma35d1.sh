@@ -166,6 +166,7 @@ do
   echo -e "${GREEN}repo sync failed, retry... ${NC}"
 done
 
+# default distro & machine
 distro=nvt-ma35d1-directfb
 machine=ma35d1-evb
 
