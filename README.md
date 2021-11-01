@@ -62,6 +62,7 @@ When EVB board is selected, there are two image choices **nvt-image-qt5** and **
 Once the image is built out, the script will generate SDK for individual developer. Developers can use the standalone SDK toolchain on another machine to develop software with the same root filesystem content as the target device.
 
 # Offline build
+Offline build can accelerate the next time image generation, provided that at least one time the bitbake completes its image recipe. 
 
 # Building issues
 Usually, due to unstable network connection, this script often is executed unsuccessfully. Reexcuting this script again and again can make the build passed, but that is not recommended.
