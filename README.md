@@ -61,6 +61,8 @@ When EVB board is selected, there are two image choices **nvt-image-qt5** and **
 # Generating SDK
 Once the image is built out, the script will generate SDK for individual developer. Developers can use the standalone SDK toolchain on another machine to develop software with the same root filesystem content as the target device.
 
+# Offline build
+
 # Building issues
 Usually, due to unstable network connection, this script often is executed unsuccessfully. Reexcuting this script again and again can make the build passed, but that is not recommended.
 
