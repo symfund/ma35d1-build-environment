@@ -211,6 +211,9 @@ until bitbake $imagename; do
   sleep 5s
 done
 
+# Offline build
+
+# SDK generation
 until bitbake $imagename -c populate_sdk; do
   echo -e "${RED}populate SDK for ${imagename} failed. retry...${NC}"
   sleep 5s
