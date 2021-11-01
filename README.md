@@ -2,10 +2,10 @@
  an unattended bash script to setup build  environment in native Linux without docker inside for ma35d1
 
 # Host OS
-Ubuntu Desktop 20.04 LTS 64-bit
+Ubuntu 20.04.3 LTS 64-bit Desktop
 
 # Installing
-1. Before installing Ubuntu Desktop 20.04 LTS 64-bit, disconnect the computer from network
+1. Before installing Ubuntu Desktop 20.04 LTS 64-bit (https://mirror.umd.edu/ubuntu-iso/20.04.3/ubuntu-20.04.3-desktop-amd64.iso), disconnect the computer from network
 2. Install Ubuntu Desktop 20.04
 3. Connect the computer to network
 4. Fetch this script
