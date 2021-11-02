@@ -1,4 +1,4 @@
-# Setting up Yocto Building Environment for MA35D1 without Docker
+# Setting up Yocto Build Environment for MA35D1 without Docker
  an unattended bash script to setup build  environment in native Linux without docker inside for ma35d1
 
 # Host OS
