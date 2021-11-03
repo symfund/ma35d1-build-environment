@@ -67,7 +67,7 @@ Offline build can accelerate the next time image generation, provided that at le
 # Building issues
 Usually, due to unstable network connection, this script often is executed unsuccessfully. Reexcuting this script again and again can make the build passed, but that is not recommended.
 
-If the script has synchronized the repository (repo sync --force-sync) without problem, open another terminal (press Ctrl + Alt + T or Ctrl + Shift + I) and follow the below steps to make the build passed.
+If the script has synchronized the repository (repo sync --force-sync) without problem, open another terminal (press Ctrl + Alt + T or Ctrl + Shift + T) and follow the below steps to make the build passed.
 
 **for EVB**
 ```bash
