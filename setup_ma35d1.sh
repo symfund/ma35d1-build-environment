@@ -171,7 +171,7 @@ distro=nvt-ma35d1-directfb
 machine=ma35d1-evb
 
 echo -e "${YELLOW}Select which board to build ... i: IoT e: EVB s: SOM ${NC}" 
-echo -e "${GREEN}Type 'i', 'e', or 's' ...${NC}"
+echo -e "${GREEN}Type 'i', 'e', or 's' ... default: e (EVB board selected)${NC}"
 
 while [ true ]; do
   read -s -n 1 -t 15 k
@@ -199,6 +199,8 @@ sleep 5s
 # Now, begin build full functionality image for machine ma35d1-evb
 DISTRO=$distro MACHINE=$machine source sources/init-build-env build
 
+YP=$(pwd)/..
+
 # Select image core-image-minimal nvt-image-qt5  
 imagename=core-image-minimal
 
@@ -206,17 +208,164 @@ if [[ "$machine" == "ma35d1-evb" ]]; then
   imagename=nvt-image-qt5
 fi
 
+offline_build() {
+
+  cd ${YP}/downloads/git2/github.com.OpenNuvoton.MA35D1_arm-trusted-firmware-v2.3.git/
+  if [[ "$1" == "Y" ]]; then 
+    sed -i 's/^SRCREV.*/SRCREV = "'$(git rev-parse HEAD)'"/' ${YP}/sources/meta-ma35d1/recipes-bsp/tf-a/tf-a-ma35d1_2.3.bb
+  else
+    sed -i 's/^SRCREV.*/SRCREV = "master"/' ${YP}/sources/meta-ma35d1/recipes-bsp/tf-a/tf-a-ma35d1_2.3.bb
+  fi
+  #cat ${YP}/sources/meta-ma35d1/recipes-bsp/tf-a/tf-a-ma35d1_2.3.bb
+
+  cd ${YP}/downloads/git2/github.com.OpenNuvoton.MA35D1_linux-5.4.y.git/
+  if [[ "$1" == "Y" ]]; then 
+    sed -i 's/^SRCREV.*/SRCREV = "'$(git rev-parse HEAD)'"/' ${YP}/sources/meta-ma35d1/recipes-kernel/linux/linux-ma35d1_5.4.110.bb
+  else
+    sed -i 's/^SRCREV.*/SRCREV = "master"/' ${YP}/sources/meta-ma35d1/recipes-kernel/linux/linux-ma35d1_5.4.110.bb
+  fi
+  #cat ${YP}/sources/meta-ma35d1/recipes-kernel/linux/linux-ma35d1_5.4.110.bb
+
+  cd ${YP}/downloads/git2/github.com.OpenNuvoton.MA35D1_NuWriter.git/
+  if [[ "$1" == "Y" ]]; then 
+    sed -i 's/^SRCREV.*/SRCREV = "'$(git rev-parse HEAD)'"/' ${YP}/sources/meta-ma35d1/recipes-devtools/python/python3-nuwriter_0.90.0.bb
+  else
+    sed -i 's/^SRCREV.*/SRCREV = "master"/' ${YP}/sources/meta-ma35d1/recipes-devtools/python/python3-nuwriter_0.90.0.bb
+  fi
+  #cat ${YP}/sources/meta-ma35d1/recipes-devtools/python/python3-nuwriter_0.90.0.bb
+
+  cd ${YP}/downloads/git2/github.com.OpenNuvoton.MA35D1_optee_os-v3.9.0.git/
+  if [[ "$1" == "Y" ]]; then 
+    sed -i 's/^SRCREV.*/SRCREV = "'$(git rev-parse HEAD)'"/' ${YP}/sources/meta-ma35d1/recipes-security/optee/optee-os-ma35d1_3.9.0.bb
+  else
+    sed -i 's/^SRCREV.*/SRCREV = "'master'"/' ${YP}/sources/meta-ma35d1/recipes-security/optee/optee-os-ma35d1_3.9.0.bb
+  fi
+  #cat ${YP}/sources/meta-ma35d1/recipes-security/optee/optee-os-ma35d1_3.9.0.bb
+
+  cd ${YP}/downloads/git2/github.com.OpenNuvoton.MA35D1_RTP_BSP.git/
+  if [[ "$1" == "Y" ]]; then 
+    sed -i 's/^SRCREV.*/SRCREV = "'$(git rev-parse HEAD)'"/' ${YP}/sources/meta-ma35d1/recipes-bsp/m4proj/m4proj_0.90.bb
+  else
+    sed -i 's/^SRCREV.*/SRCREV = "'master'"/' ${YP}/sources/meta-ma35d1/recipes-bsp/m4proj/m4proj_0.90.bb
+  fi
+  #cat ${YP}/sources/meta-ma35d1/recipes-bsp/m4proj/m4proj_0.90.bb
+
+  cd ${YP}/downloads/git2/github.com.OpenNuvoton.MA35D1_u-boot-v2020.07.git/
+  if [[ "$1" == "Y" ]]; then 
+    sed -i 's/^SRCREV.*/SRCREV = "'$(git rev-parse HEAD)'"/' ${YP}/sources/meta-ma35d1/recipes-bsp/u-boot/u-boot-ma35d1_2020.07.bb
+  else
+    sed -i 's/^SRCREV.*/SRCREV = "'master'"/' ${YP}/sources/meta-ma35d1/recipes-bsp/u-boot/u-boot-ma35d1_2020.07.bb
+  fi
+  #cat ${YP}/sources/meta-ma35d1/recipes-bsp/u-boot/u-boot-ma35d1_2020.07.bb
+
+  if grep -q "BB_NO_NETWORK" ${YP}/build/conf/local.conf; then
+    #found 
+    #echo -e "${RED}BB_NO_NETWORK found${NC}"
+    if [[ "$1" == "N" ]]; then 
+      sed -i 's/^BB_NO_NETWORK.*/BB_NO_NETWORK = "0"/' ${YP}/build/conf/local.conf
+    else
+      sed -i 's/^BB_NO_NETWORK.*/BB_NO_NETWORK = "1"/' ${YP}/build/conf/local.conf
+    fi
+  else
+    #not found, append a line at the end of the file
+    #echo -e "${RED}BB_NO_NETWORK not found${NC}"
+    if [[ "$1" == "N" ]]; then
+      echo 'BB_NO_NETWORK = "0"' >> ${YP}/build/conf/local.conf 
+      #sed '$ a BB_NO_NETWORK = "0"' ${YP}/build/conf/local.conf
+    else
+      echo 'BB_NO_NETWORK = "1"' >> ${YP}/build/conf/local.conf
+      #sed '$ a BB_NO_NETWORK = "1"' ${YP}/build/conf/local.conf
+    fi
+  fi
+
+  #echo -e "${YELLOW}enable offline build in local.conf whether or not?${NC}"
+  #cat ${YP}/build/conf/local.conf
+
+  cd ${YP}/build
+
+#  if [[ "$1" == "N" ]]; then 
+#    bitbake u-boot-ma35d1 -c cleansstate 
+#    bitbake m4proj -c cleansstate
+#    bitbake linux-ma35d1 -c cleansstate
+#  fi
+}
+
+# force offline build in case of bitbake always fetches code failed
+if [[ -f ${YP}/build/build.done ]]; then
+
+  echo -e "${YELLOW}force offline build?${NC}"
+  echo -e "${GREEN}Type 'y', or 'n' ... default: y (force offline build)${NC}"
+
+  while [ true ]; do
+    read -s -n 1 -t 15 k
+
+    case $k in
+      y* ) echo -e "${RED}YES means that bitbake does not want to fetch the latest code${NC}" 
+           sleep 5s
+           offline_build "Y"
+           break
+           ;;
+      n* ) echo -e "${RED}NO means that bitbake will fetch the latest code${NC}"
+           sleep 5s
+           offline_build "N"
+           break 
+           ;;
+      *  ) offline_build "Y"
+           break
+           ;;
+    esac
+
+  done
+
+fi
+
+# Build image recipe
+echo -e "${GREEN}start building $imagename ...${NC}"
 until bitbake $imagename; do
-  echo -e "${GREEN} bitbake $imagename failed. retry... ${NC}"
+  echo -e "${RED}bitbake $imagename failed. retrying ...${NC}"
   sleep 5s
 done
+echo -e "${GREEN}building $imagename succeeded!${NC}"
+touch ${YP}/build/build.done
+
+generate_sdk() {
+  # SDK generation
+  echo -e "${GREEN}start generating SDK ...${NC}"
+  until bitbake $imagename -c populate_sdk; do
+    echo -e "${RED}populate SDK for ${imagename} failed. retry...${NC}"
+    sleep 5s
+  done
+  echo -e "${GREEN}generating SDK succeeded!${NC}"
+}
+
+if [ ! -f ${YP}/build/tmp-glibc/deploy/sdk/oecore-x86_64-aarch64-toolchain-5.5-dunfell.sh ]; then
+  echo "uncomment to generate SDK"
+  #generate_sdk
+fi
 
 # Offline build
+echo -e "${YELLOW}CAUTION: offline build can accelerate the next time image generation, but maybe miss the important fixes if the SOC vendor updated the repositories!${NC}"
+echo -e "${GREEN}Enable offline build? Type [y]es or [n]o ..., by default, always enable offline build!${NC}"
 
-# SDK generation
-until bitbake $imagename -c populate_sdk; do
-  echo -e "${RED}populate SDK for ${imagename} failed. retry...${NC}"
-  sleep 5s
+while [ true ]; do
+  read -s -n 1 -t 15 k
+
+  case $k in
+    n* ) echo -e "${GREEN}disable offline build${NC}"
+         offline_build "N"
+         ;;
+    y* ) echo -e "${GREEN}enable offline build${NC}"
+         offline_build "Y"
+         break
+         ;;
+    *  ) echo -e "${YELLOW}enable offline build automatically by default.${NC} "
+         offline_build "N"
+         break
+         ;;
+  esac
+
 done
+
+echo "All done. Press any key to continue..."
 
 # devtool build-image $imagename
