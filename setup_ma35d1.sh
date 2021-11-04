@@ -340,7 +340,7 @@ generate_sdk() {
 
 if [ ! -f ${YP}/build/tmp-glibc/deploy/sdk/oecore-x86_64-aarch64-toolchain-5.5-dunfell.sh ]; then
   echo "uncomment to generate SDK"
-  #generate_sdk
+  generate_sdk
 fi
 
 # Offline build
