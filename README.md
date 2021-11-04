@@ -64,6 +64,13 @@ Once the image is built out, the script will generate SDK for individual develop
 # Offline build
 Offline build can accelerate the next time image generation, provided that at least one time the bitbake completes its image recipe. However, if server has update the repositories, bitbake can miss the latest patches.
 
+To force offline build in case of the failure encountered by bitbake's do_fetch task
+```
+cd ${YP}/build
+touch build.done
+source /path/to/setup_ma35d1.sh
+```
+
 # Building issues
 Usually, due to unstable network connection, this script often is executed unsuccessfully. Reexcuting this script again and again can make the build passed, but that is not recommended.
 
