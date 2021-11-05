@@ -62,6 +62,7 @@ When EVB board is selected, there are two image choices **nvt-image-qt5** and **
 Once the image is built out, the script will generate SDK for individual developer. Developers can use the standalone SDK toolchain on another machine to develop software with the same root filesystem content as the target device. 
 
 **If extra features are enabled in image after the done of SDK generation, basically, the script should regenerate the SDK.**
+Enabling features in image means that changing the **EXTRA_IMAGE_FEATURES**, **IMAGE_INSTALL** in local build configuration file ${YP}/build/conf/local.conf
 
 # Offline build
 Offline build can accelerate the next time image generation, provided that the bitbake completes its image recipe at least one time. However, if server has update the repositories, bitbake can miss the latest patches. In another words, **disabling offline build** lead bitbake to fetch remote repositories.
