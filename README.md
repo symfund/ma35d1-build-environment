@@ -69,8 +69,7 @@ Offline build can accelerate the next time image generation, provided that the b
 
 To force offline build in case of the failure encountered by bitbake's do_fetch task
 ```
-cd ${YP}/build
-touch build.done
+touch ${YP}/build/build.done
 source /path/to/setup_ma35d1.sh
 ```
 
