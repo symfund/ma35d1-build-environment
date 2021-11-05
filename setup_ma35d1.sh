@@ -348,7 +348,7 @@ echo -e "${YELLOW}CAUTION: offline build can accelerate the next time image gene
 echo -e "${GREEN}Enable offline build? Type [y]es or [n]o ..., by default, always enable offline build!${NC}"
 
 while [ true ]; do
-  read -s -n 1 -t 15 k
+  read -s -n 1 -t 5 k
 
   case $k in
     n* ) echo -e "${GREEN}disable offline build${NC}"
