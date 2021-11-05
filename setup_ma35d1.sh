@@ -152,7 +152,7 @@ if [ ! -d ~/Projects/yocto ]; then
   mkdir -p ~/Projects/yocto
 fi
 
-if [ ! -d ~/Projects/yocto/source ]; then
+if [ ! -d ~/Projects/yocto/sources ]; then
   cd ~/Projects/yocto
 
   export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
@@ -165,20 +165,20 @@ until repo sync --force-sync
 do
   echo -e "${RED}repo sync failed, retry... ${NC}"
 
-  if [[ -f ~/Projects/yocto/sources ]]; then
+  if [[ -d ~/Projects/yocto/sources ]]; then
     echo -e "${GREEN}The script detects that repo has completed the synchronization ever, skips sync this time.${NC}" 
     break
   fi
 done
 
 # default distro & machine
-distro=nvt-ma35d1-directfb
-machine=ma35d1-evb
+distro=nvt-ma35d1
+machine=ma35d1-iot
 
 # If exists the local build configuration file local.conf, read distro and machine from that
 
 echo -e "${YELLOW}Select which board to build ... i: IoT e: EVB s: SOM ${NC}" 
-echo -e "${GREEN}Type 'i', 'e', or 's' ... default: e (EVB board selected)${NC}"
+echo -e "${GREEN}Type 'i', 'e', or 's' ... default: i (IoT board selected)${NC}"
 
 while [ true ]; do
   read -s -n 1 -t 15 k
@@ -193,7 +193,7 @@ while [ true ]; do
     s* ) distro=nvt-ma35d1 machine=ma35d1-som 
          break 
          ;;
-    *  ) echo -e " ${RED}No board specified, EVB board selected by default. ${NC} " 
+    *  ) echo -e " ${RED}No board specified, IoT board selected by default. ${NC} " 
          break 
          ;;
   esac
