@@ -323,7 +323,7 @@ fi
 echo -e "${GREEN}start building $imagename ...${NC}"
 until bitbake $imagename; do
   echo -e "${RED}bitbake $imagename failed. retrying ...${NC}"
-  echo -e "${YELLOW}bitbake do_fetch failed? offline build enabled? Hah Hah! hnnn, got it!!!${NC}
+  echo -e "${YELLOW}bitbake do_fetch failed? offline build enabled? Hah Hah! hnnn, got it!!!${NC}"
   sleep 5s
 done
 echo -e "${GREEN}building $imagename succeeded!${NC}"
