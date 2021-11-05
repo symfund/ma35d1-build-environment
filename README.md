@@ -74,6 +74,11 @@ touch build.done
 source /path/to/setup_ma35d1.sh
 ```
 
+**build.done** is a persistent file, indicating that bitbake has downloaded all the source packages the image requires. To download all the packages without actually building image, issue the following command
+```
+$ bitbake core-image-minimal -c fetchall
+```
+
 # Building issues
 Usually, due to unstable network connection, this script often is executed unsuccessfully. Reexcuting this script again and again can make the build passed, but that is not recommended.
 
