@@ -61,7 +61,7 @@ When EVB board is selected, there are two image choices **nvt-image-qt5** and **
 # Generating SDK
 Once the image is built out, the script will generate SDK for individual developer. Developers can use the standalone SDK toolchain on another machine to develop software with the same root filesystem content as the target device. 
 
-**If extra features are enabled in image after the done of SDK generation, basically, the script should regenerate the SDK.**
+**If extra features are enabled in image after the SDK generation is done, basically, the script should regenerate the SDK.**
 
 Enabling features in image means changing the **EXTRA_IMAGE_FEATURES**, **IMAGE_INSTALL** in local build configuration file **${YP}/build/conf/local.conf**
 
