@@ -425,10 +425,10 @@ confirm_offline_build() {
 		
 		enable_offline_build
 	else
-		echo -e "${YELLOW}force enabling offline build${NC}"
 		if [[ -d ${YP_DIR}/downloads ]]; then
-				ENABLE_OFFLINE_BUILD=true
-				sed -i 's/^ENABLE_OFFLINE_BUILD.*/ENABLE_OFFLINE_BUILD=true/' ${YP_DIR}/build/build.conf
+			echo -e "${YELLOW}force enabling offline build silently${NC}"
+			ENABLE_OFFLINE_BUILD=true
+			sed -i 's/^ENABLE_OFFLINE_BUILD.*/ENABLE_OFFLINE_BUILD=true/' ${YP_DIR}/build/build.conf
 		fi
 
 	fi
