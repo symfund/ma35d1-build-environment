@@ -2,17 +2,18 @@
  an unattended bash script to setup build  environment in native Linux without docker inside for ma35d1
 
 # Host OS
-Ubuntu 20.04.3 LTS 64-bit Desktop
+Ubuntu Desktop 20.04.3 64-bit LTS
 
 # Installing
-1. Before installing Ubuntu Desktop 20.04 LTS 64-bit (https://mirror.umd.edu/ubuntu-iso/20.04.3/ubuntu-20.04.3-desktop-amd64.iso), disconnect the computer from network
-2. Install Ubuntu Desktop 20.04
+1. Disconnect the computer from network before installing Ubuntu Desktop 20.04.3 64-bit LTS
+2. Install Ubuntu Desktop 20.04.3 64-bit LTS
 3. Connect the computer to network
 4. Fetch this script
 5. Execute this script
+   Peform the below command, with or without argument **YP_DIR**. If **YP_DIR** does not exist, script will fetch remote repositories into current directory.
 
 ```bash
-  $ source setup_ma35d1.sh
+  $ source /path/to/setup_ma35d1.sh <YP_DIR>
 ```
 
 # Selecting board
@@ -63,20 +64,30 @@ Once the image is built out, the script will generate SDK for individual develop
 
 **If extra features are enabled in image after the SDK generation is done, basically, the script should regenerate the SDK.**
 
-Enabling features in image means changing the **EXTRA_IMAGE_FEATURES** and **IMAGE_INSTALL** in local build configuration file **${YP}/build/conf/local.conf**
+Enabling features in image means changing the **EXTRA_IMAGE_FEATURES** and **IMAGE_INSTALL** in local build configuration file **${YP_DIR}/build/conf/local.conf**
 
 # Offline build
 Offline build can accelerate the next time image generation, provided that the bitbake completes its image recipe at least one time. However, if server has updated the repositories, bitbake will miss the latest important fixes. 
 
-In another words, **disabling offline build** lead bitbake to fetch remote repositories.
+In another words, **disabling offline build** lead bitbake to fetch latest code.
 
-To force offline build in case of the failure encountered by bitbake's do_fetch task
+To **force enabling offline build on another machine** without completing setting up build environment at all, follow the subsequent steps 
+1. prepare an empty directory /path/to/yocto
+2. change current directory to /path/to/yocto, 
+3. copy the downloaded dependency package **downloads.tar.gz** to this directory /path/to/yocto
+4. extract the dependency package downloads.tar.gz
+5. launch this script.
+
 ```
-touch ${YP}/build/build.done
+mkdir -p /path/to/yocto
+cd /path/to/yocto
+copy /path/to/downloads.tar.gz $PWD
+tar xzvf downloads.tar.gz
 source /path/to/setup_ma35d1.sh
 ```
 
-**${YP}/build/build.done** is a persistent file, indicating that bitbake has downloaded all the source packages the image requires. To download all the packages without actually building image, issue the following command
+To download all the dependency packages **downloads.tar.gz** without actually building image, issue the below command
+
 ```
 $ bitbake core-image-minimal -c fetchall
 ```
