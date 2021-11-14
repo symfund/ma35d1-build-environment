@@ -2,8 +2,8 @@
 
 
 # To run this script, perform the below command, with or without 'YP_DIR' argument.
-# The script will fetch remote repositories into 'YP_DIR', if 'YP_DIR' does not exist,
-# script will create it.
+# With 'YP_DIR', the script will fetch remote repositories into 'YP_DIR'.
+# Without 'YP_DIR', script will fetch remote repositories into current directory.
 #
 # source /path/to/setup_ma35d1.sh <YP_DIR>
 
