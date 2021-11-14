@@ -1,23 +1,33 @@
-# !/bin/sh
+#! /bin/sh
 
 
-# To run this script, 'source script'
-# source setup_ma35d1.sh
+# To run this script, perform the below command, with or without 'YP_DIR' argument.
+# The script will fetch remote repositories into 'YP_DIR', if 'YP_DIR' does not exist,
+# script will create it.
+#
+# source /path/to/setup_ma35d1.sh <YP_DIR>
 
-# or in this way, 'dot script'
-# . setup_ma35d1.sh
+
+
+# default distro & machine
+distro=nvt-ma35d1
+machine=ma35d1-iot
+imagename=core-image-minimal
+
 
 
 # Colors
-# =========================================
-# BLACK		0;30 DARK GRAY		1;30
-# RED		0;31 LIGHT RED		1;31
-# GREEN		0;32 LIGHT GREEN	1;32
-# ORANGE	0;33 YELLOW		1;33
-# BLUE		0;34 LIGHT		1;34
-# PURPLE	0;35 LIGHT PURPLE	1;35
-# CYAN		0;36 LIGHT CYAN		1;36
-# LIGHTGRAY	0;37 WHITE		1;37
+
+# ==================================================
+# BLACK		0;30	DARK GRAY		1;30			
+# RED		0;31	LIGHT RED		1;31
+# GREEN		0;32	LIGHT GREEN		1;32
+# ORANGE	0;33	YELLOW			1;33
+# BLUE		0;34	LIGHT			1;34
+# PURPLE	0;35	LIGHT PURPLE		1;35
+# CYAN		0;36	LIGHT CYAN		1;36
+# LIGHTGRAY	0;37	WHITE			1;37
+# ==================================================
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -25,347 +35,459 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 
-script_name=$0
-script_full_path=$(dirname "$0")
 
-#echo "script name: $script_name"
-#echo "full path: $script_full_path"
+SCRIPT_NAME=$(realpath $0)
+echo "script name: $SCRIPT_NAME" 
 
-
-# Force uninstalling unnecessary packages to accelerate system update
-sudo apt --purge remove firefox* thunderbird* libreoffice* rhythmbox*
-sudo apt autoremove
-
-sudo apt update 
-sudo apt upgrade 
-sudo apt autoremove
-
-# System tools
-SysTools="open-vm-tools openssh-server nfs-kernel-server net-tools curl git"
-echo "System Tools Installing ..."
-
-# Fast Installing
-sudo apt install --yes $SysTools
-
-# The following install way is considerably slow!
-#for sw in $SysTools; do
-#  echo "${RED}installing $sw ...${NC}"
-#  sudo apt install --yes $sw 
-#done
-
-# Yocto standard tools
-echo "Yocto Tools Installing ..."
-YoctoTools="gawk wget git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev pylint3 xterm python3-subunit mesa-common-dev"
-
-# Fast Installing
-sudo apt install --yes $YoctoTools
-
-# The following install way is considerably slow!
-#for sw in $YoctoTools; do
-#  echo "${RED}installing $sw ...${NC}"
-#  sudo apt install --yes $sw
-#done
+YP_DIR=""
+CURDIR=""
 
 
-#echo "sleep 5 days ..."
-#sleep 5d
 
-# MA35D1 tools
-echo "Ma35d1 Tools Installing ..."
-# xvfb is required as recipe m4proj uses NuEclipse from command line to compile Eclipse-based sample projects
-Ma35d1Tools="python autoconf automake cvs subversion flex bison u-boot-tools libssl-dev libncurses5-dev xvfb"
+generate_default_build_configuration() {
+	touch ${YP_DIR}/build/build.conf
 
-# Fast Installing
-sudo apt install --yes $Ma35d1Tools
-
-# The following install way is considerably slow!
-#for sw in $Ma35d1Tools1; do
-#  echo "${RED}installing $sw ...${NC}"
-#  sudo apt install --yes $sw
-#done
-
-# uncomment to install Docker
-# Docker 
-# if [ ! -d ~/Projects/MA35D1_Docker_Script ]; then
-#  mkdir -p ~/Projects/MA35D1_Docker_Script
-#  git clone https://github.com/OpenNuvoton/MA35D1_Docker_Script.git ~/Projects/MA35D1_Docker_Script 
-# fi
-
-# Repo
-if [ ! -f /usr/bin/repo ]; then
-  echo "repo does not exist! Downloading repo from https://mirrors.tuna.tsinghua.edu.cn/git/git-rep"
-  curl https://mirrors.tuna.tsinghua.edu.cn/git/git-repo > ~/repo
-  if [ -f ~/repo ]; then
-    chmod +x ~/repo
-    sudo mv ~/repo /usr/bin/
-  fi
-fi
-
-# Configure git
-# test if a command outputs an empty string
-# commands do not return values - they output them. You can capture this output by using command subsititution; e.g. $(ls -A)
-if [ `git config user.email` ]; then
-
-  strHeader=" ________________________________________________________"
-  sizeStrHeader=${#strHeader}
-
-  str2="| E-mail: $(git config user.email)"
-  str3="| Name:   $(git config user.name)"
-  sizeStr2=${#str2}
-  sizeStr3=${#str3}
-
-  echo 
-  echo  " ________________________________________________________"
-  echo  "|                                                       |"
-  echo  "|                     Git Account                       |"
-  echo  "|                                                       |"
-  echo -n  "| E-mail: $(git config user.email)"
-
-  start=1
-  let end=sizeStrHeader-sizeStr2-1
-  for ((i=$start; i<=$end; i++)); do echo -n " "; done
-  echo "|" 
-
-  echo -n  "| Name:   $(git config user.name)"
-  
-  let end=sizeStrHeader-sizeStr3-1
-  for ((i=$start; i<=$end; i++)); do echo -n " "; done
-  echo "|"
-
-  echo  "|                                                       |"
-  echo  "|_______________________________________________________|"
-  echo 
-  
-else
-  read -p "Enter Git user email: " email
-  read -p "Enter Git user name: " fullname
-  git config --global user.email $email
-  git config --global user.name $fullname
-fi
-
-# Sleep
-#echo "pause 10 seconds ..."
-#sleep 5d
-
-# Repo fetch
-if [ ! -d ~/Projects/yocto ]; then
-  mkdir -p ~/Projects/yocto
-fi
-
-if [ ! -d ~/Projects/yocto/sources ]; then
-  cd ~/Projects/yocto
-
-  export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
-  repo init -u git://github.com/OpenNuvoton/MA35D1_Yocto-v3.1.3.git -m meta-ma35d1/base/ma35d1.xml
-
-fi
-
-cd ~/Projects/yocto
-until repo sync --force-sync 
-do
-  echo -e "${RED}repo sync failed, retry... ${NC}"
-
-  if [[ -d ~/Projects/yocto/sources ]]; then
-    echo -e "${GREEN}The script detects that repo has completed the synchronization ever, skips sync this time.${NC}" 
-    break
-  fi
-done
-
-# default distro & machine
-distro=nvt-ma35d1
-machine=ma35d1-iot
-
-# If exists the local build configuration file local.conf, read distro and machine from that
-
-echo -e "${YELLOW}Select which board to build ... i: IoT e: EVB s: SOM ${NC}" 
-echo -e "${GREEN}Type 'i', 'e', or 's' ... default: i (IoT board selected)${NC}"
-
-while [ true ]; do
-  read -s -n 1 -t 15 k
-
-  case $k in
-    i* ) distro=nvt-ma35d1 machine=ma35d1-iot 
-         break 
-         ;;
-    e* ) distro=nvt-ma35d1-directfb machine=ma35d1-evb 
-         break 
-         ;;
-    s* ) distro=nvt-ma35d1 machine=ma35d1-som 
-         break 
-         ;;
-    *  ) echo -e " ${RED}No board specified, IoT board selected by default. ${NC} " 
-         break 
-         ;;
-  esac
-  
-done
-
-echo -e "${YELLOW}DISTRO: $distro, MACHINE: $machine${NC}"
-sleep 5s
-
-# Now, begin build full functionality image for machine ma35d1-evb
-DISTRO=$distro MACHINE=$machine source sources/init-build-env build
-
-YP=$(pwd)/..
-
-# Select image core-image-minimal nvt-image-qt5  
-imagename=core-image-minimal
-
-if [[ "$machine" == "ma35d1-evb" ]]; then
-  imagename=nvt-image-qt5
-fi
-
-offline_build() {
-
-  declare -A ASSOC_ARRAY_REPO_RECP 
-
-  ARM_TRUSTED_FIRMWARE_REPO="${YP}/downloads/git2/github.com.OpenNuvoton.MA35D1_arm-trusted-firmware-v2.3.git"
-  ARM_TRUSTED_FIRMWARE_RECP="${YP}/sources/meta-ma35d1/recipes-bsp/tf-a/tf-a-ma35d1_2.3.bb"
-  ASSOC_ARRAY_REPO_RECP[$ARM_TRUSTED_FIRMWARE_REPO]=$ARM_TRUSTED_FIRMWARE_RECP
-
-  LINUX_REPO="${YP}/downloads/git2/github.com.OpenNuvoton.MA35D1_linux-5.4.y.git"
-  LINUX_RECP="${YP}/sources/meta-ma35d1/recipes-kernel/linux/linux-ma35d1_5.4.110.bb"
-  ASSOC_ARRAY_REPO_RECP[$LINUX_REPO]=$LINUX_RECP
-
-  NUWRITER_REPO="${YP}/downloads/git2/github.com.OpenNuvoton.MA35D1_NuWriter.git"
-  NUWRITER_RECP="${YP}/sources/meta-ma35d1/recipes-devtools/python/python3-nuwriter_0.90.0.bb"
-  ASSOC_ARRAY_REPO_RECP[$NUWRITER_REPO]=$NUWRITER_RECP 
-
-  OPTEE_REPO="${YP}/downloads/git2/github.com.OpenNuvoton.MA35D1_optee_os-v3.9.0.git"
-  OPTEE_RECP="${YP}/sources/meta-ma35d1/recipes-security/optee/optee-os-ma35d1_3.9.0.bb"
-  ASSOC_ARRAY_REPO_RECP[$OPTEE_REPO]=$OPTEE_RECP 
-
-  M4PROJ_REPO="${YP}/downloads/git2/github.com.OpenNuvoton.MA35D1_RTP_BSP.git"
-  M4PROJ_RECP="${YP}/sources/meta-ma35d1/recipes-bsp/m4proj/m4proj_0.90.bb"
-  ASSOC_ARRAY_REPO_RECP[$M4PROJ_REPO]=$M4PROJ_RECP
-
-  UBOOT_REPO="${YP}/downloads/git2/github.com.OpenNuvoton.MA35D1_u-boot-v2020.07.git"
-  UBOOT_RECP="${YP}/sources/meta-ma35d1/recipes-bsp/u-boot/u-boot-ma35d1_2020.07.bb"
-  ASSOC_ARRAY_REPO_RECP[$UBOOT_REPO]=$UBOOT_RECP
-
-  for repo in "${!ASSOC_ARRAY_REPO_RECP[@]}"
-  do
-    #echo -e "${GREEN}repo: $repo${NC}"
-    #echo -e "${YELLOW}recipe: ${ASSOC_ARRAY_REPO_RECP[$repo]}${NC}"
-    cd $repo
-    if [[ "$1" == "Y" ]]; then
-      sed -i 's/^SRCREV.*/SRCREV = "'$(git rev-parse HEAD)'"/' ${ASSOC_ARRAY_REPO_RECP[$repo]}
-    else
-      sed -i 's/^SRCREV.*/SRCREV = "master"/' ${ASSOC_ARRAY_REPO_RECP[$repo]} 
-    fi
-    #cat ${ASSOC_ARRAY_REPO_RECP[$repo]}
-  done
-
-
-  if grep -q "BB_NO_NETWORK" ${YP}/build/conf/local.conf; then
-    #found 
-    #echo -e "${RED}BB_NO_NETWORK found${NC}"
-    if [[ "$1" == "N" ]]; then 
-      sed -i 's/^BB_NO_NETWORK.*/BB_NO_NETWORK = "0"/' ${YP}/build/conf/local.conf
-    else
-      sed -i 's/^BB_NO_NETWORK.*/BB_NO_NETWORK = "1"/' ${YP}/build/conf/local.conf
-    fi
-  else
-    #not found, append a line at the end of the file
-    #echo -e "${RED}BB_NO_NETWORK not found${NC}"
-    if [[ "$1" == "N" ]]; then
-      echo 'BB_NO_NETWORK = "0"' >> ${YP}/build/conf/local.conf 
-      #sed '$ a BB_NO_NETWORK = "0"' ${YP}/build/conf/local.conf
-    else
-      echo 'BB_NO_NETWORK = "1"' >> ${YP}/build/conf/local.conf
-      #sed '$ a BB_NO_NETWORK = "1"' ${YP}/build/conf/local.conf
-    fi
-  fi
-
-  #echo -e "${YELLOW}enable offline build in local.conf whether or not?${NC}"
-  #cat ${YP}/build/conf/local.conf
-
-  cd ${YP}/build
-
-#  if [[ "$1" == "N" ]]; then 
-#    bitbake u-boot-ma35d1 -c cleansstate 
-#    bitbake m4proj -c cleansstate
-#    bitbake linux-ma35d1 -c cleansstate
-#  fi
+	echo "SKIP_UNINSTALLING_TOOLS=false" >> ${YP_DIR}/build/build.conf
+	echo "SKIP_SYSTEM_UPDATE=false" >> ${YP_DIR}/build/build.conf
+	echo "SKIP_SYSTEM_UPGRADE=false" >> ${YP_DIR}/build/build.conf
+	echo "SKIP_REPO_SYNC=false" >> ${YP_DIR}/build/build.conf
+	echo "SKIP_SDK_GENERATION=false" >> ${YP_DIR}/build/build.conf
+	echo "YP_INIT_DONE=false" >> ${YP_DIR}/build/build.conf
+	echo "YP_BUILD_DONE=false" >> ${YP_DIR}/build/build.conf
+	echo "ENABLE_OFFLINE_BUILD=false" >> ${YP_DIR}/build/build.conf
+	
+	source ${YP_DIR}/build/build.conf
 }
 
-# force offline build in case of bitbake always fetches code failed
-if [[ -f ${YP}/build/build.done ]]; then
+whether_directory_empty_or_not() {
+	if [ "$(ls -A ${CURDIR})" ]; then
+		echo -e "${YELLOW}Current directory is not empty, wheter in a previous Yocto directory?${NC}"
+		
+		# script running in previous Yocto build directory, weak condition
+		if [[ -f ${CURDIR}/bitbake-cookerdaemon.log ]]; then
+			echo -e "${YELLOW}script is running in previous build directory${NC}"
+			source ${CURDIR}/build.conf
+			
+			echo ""
+			cat ${CURDIR}/build.conf
+			echo ""
+			
+			YP_DIR="${CURDIR}/.."
+			echo -e "${GREEN}Yocto directory is ${YP_DIR}${NC}"
+		else
+			# ? YP_DIR/build>downloads,.repo>sources
+			if [[ -d ${CURDIR}/build && -f ${CURDIR}/build/bitbake-cookerdaemon.log ]]; then
+				echo -e "${YELLOW}script is running in upper level of the Yocto build directory${NC}"
+				source ${CURDIR}/build/build.conf
+				
+				echo ""
+				cat ${CURDIR}/build/build.conf
+				echo ""
+				
+				YP_DIR=${CURDIR}
+				echo -e "${GREEN}Yocto directory is ${YP_DIR}${NC}"
+			else
+				YP_DIR=${CURDIR}
+				echo -e "${GREEN}Yocto directory is ${YP_DIR}${NC}"
+				mkdir -p ${YP_DIR}/build
+				generate_default_build_configuration
+			fi
+		fi
+		
+	else
+		# OK
+		echo -e "${YELLOW}Current directory is empty.${NC}"
+		YP_DIR=${CURDIR}
+		echo -e "${GREEN}Yocto directory is ${YP_DIR}${NC}"
+		mkdir -p ${YP_DIR}/build
+		generate_default_build_configuration
+	fi
+}
 
-  echo -e "${YELLOW}force offline build?${NC}"
-  echo -e "${GREEN}Type 'y', or 'n' ... default: y (force offline build)${NC}"
+install_system_tools() {
+	# chromium-browser openssh-server qtcreator net-tools wine open-vm-tools nfs-kernel-server 
+	SysTools="curl git gitk"
+	echo -e "${GREEN}Installing system tools ...${NC}"
+	sudo apt install --yes $SysTools
+}
 
-  while [ true ]; do
-    read -s -n 1 -t 15 k
+install_yocto_tools() {
+	echo -e "${GREEN}Installing Yocto tools ...${NC}"
+	YoctoTools="gawk wget git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev pylint3 xterm python3-subunit mesa-common-dev"
+	sudo apt install --yes $YoctoTools
+}
 
-    case $k in
-      y* ) echo -e "${RED}YES means that bitbake does not want to fetch the latest code${NC}" 
-           sleep 5s
-           offline_build "Y"
-           break
-           ;;
-      n* ) echo -e "${RED}NO means that bitbake will fetch the latest code${NC}"
-           sleep 5s
-           offline_build "N"
-           break 
-           ;;
-      *  ) offline_build "Y"
-           break
-           ;;
-    esac
+install_ma35d1_tools() {
+	echo -e "${GREEN}Installing MA35D1 tools ...${NC}"
+	# xvfb is required as recipe m4proj uses NuEclipse from command line to compile Eclipse-based sample projects
+	Ma35d1Tools="python autoconf automake cvs subversion flex bison u-boot-tools libssl-dev libncurses5-dev xvfb"
+	sudo apt install --yes $Ma35d1Tools
+}
 
-  done
+install_ma35d1_docer() {
+	if [ ! -d ${YP_DIR}/MA35D1_Docker_Script ]; then
+		mkdir -p ${YP_DIR}/MA35D1_Docker_Script
+		git clone https://github.com/OpenNuvoton/MA35D1_Docker_Script.git ${YP_DIR}/MA35D1_Docker_Script 
+	fi
+}
 
-fi
+install_repo() {
+	if [ ! -f /usr/bin/repo ]; then
+	  echo "repo does not exist! Downloading repo from https://mirrors.tuna.tsinghua.edu.cn/git/git-rep"
+	  curl https://mirrors.tuna.tsinghua.edu.cn/git/git-repo > ~/repo
+	  if [ -f ~/repo ]; then
+	    chmod +x ~/repo
+	    sudo mv ~/repo /usr/bin/
+	  fi
+	  echo -e "${GREEN}repo installation succeeded.${NC}"
+	fi
+}
 
-# Build image recipe
-echo -e "${GREEN}start building $imagename ...${NC}"
-until bitbake $imagename; do
-  echo -e "${RED}bitbake $imagename failed. retrying ...${NC}"
-  echo -e "${YELLOW}bitbake do_fetch failed? offline build enabled? Hah Hah! hnnn, got it!!!${NC}"
-  sleep 5s
-done
-echo -e "${GREEN}building $imagename succeeded!${NC}"
-touch ${YP}/build/build.done
+init_repo() {
+	if [ ! -d ${YP_DIR}/sources ]; then
+	  cd ${YP_DIR}
+
+	  export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
+	  until repo init -u git://github.com/OpenNuvoton/MA35D1_Yocto-v3.1.3.git -m meta-ma35d1/base/ma35d1.xml
+	  do
+		echo -e "${RED}repo init failed! retrying ...${NC}"
+	  done
+	  echo -e "${GREEN}repo initialized successfully.${NC}"
+	  
+	  sed -i 's/^YP_INIT_DONE.*/YP_INIT_DONE=true/' ${YP_DIR}/build/build.conf
+
+	fi
+}
+
+sync_repo() {
+	cd ${YP_DIR}
+	
+	# offline build enabled?
+	if [[ "$ENABLE_OFFLINE_BUILD" == false ]]; then
+		if [[ "$SKIP_REPO_SYNC" == false ]]; then
+			until repo sync --force-sync 
+			do
+		  		echo -e "${RED}repo sync failed, retrying ... ${NC}"
+
+		  		if [[ -d ${YP_DIR}/sources ]]; then
+						echo -e "${RED}The script detects that repo has completed the synchronization ever, skips sync this time.${NC}" 
+						break
+		  		fi
+			done
+			echo -e "${YELLOW}repo sync succeeded.${NC}"
+		fi
+	else
+		echo -e "${RED}It makes no sense 'repo sync' with offline build enabled.${NC}"
+	fi
+}
+
+configure_git_account() {
+
+	# Configure git
+	# test if a command outputs an empty string
+	# commands do not return values - they output them. You can capture this output by using command subsititution; e.g. $(ls -A)
+	if [ $(git config user.email) ]; then
+	
+	  str_header=" ________________________________________________________"
+	  strlen_header=${#str_header}
+
+	  str_mail="| E-mail: $(git config user.email)"
+	  str_name="| Name:   $(git config user.name)"
+	  strlen_mail=${#str_mail}
+	  strlen_name=${#str_name}
+
+	  echo 
+	  echo  " ________________________________________________________"
+	  echo  "|                                                       |"
+	  echo  "|                     Git Account                       |"
+	  echo  "|                                                       |"
+	  echo -n  "| E-mail: $(git config user.email)"
+
+	  start=1
+	  let end=strlen_header-strlen_mail-1
+	  for ((i=$start; i<=$end; i++)); do echo -n " "; done
+	  echo "|" 
+
+	  echo -n  "| Name:   $(git config user.name)"
+	  
+	  let end=strlen_header-strlen_name-1
+	  for ((i=$start; i<=$end; i++)); do echo -n " "; done
+	  echo "|"
+
+	  echo  "|                                                       |"
+	  echo  "|_______________________________________________________|"
+	  echo 
+	  
+	else
+	  read -p "Enter Git user email: " email
+	  read -p "Enter Git user name: " fullname
+	  git config --global user.email $email
+	  git config --global user.name $fullname
+	fi
+}
+
+select_distro_machine() {
+
+	# If exists the local build configuration file local.conf, read distro and machine from that
+
+	echo -e "${YELLOW}Select which board to build ... i: IoT e: EVB s: SOM ${NC}" 
+	echo -e "${GREEN}Type 'i', 'e', or 's' ... default: ${machine} board selected${NC}"
+
+	while [ true ];
+	do
+		read -s -n 1 -t 15 k
+
+		case $k in
+			i* )
+				distro=nvt-ma35d1 machine=ma35d1-iot 
+				break 
+				;;
+			e* )
+				distro=nvt-ma35d1-directfb machine=ma35d1-evb 
+				break 
+				;;
+			s* )
+				distro=nvt-ma35d1 machine=ma35d1-som 
+				break 
+				;;
+			*  )
+				echo -e " ${RED}No board specified, ${machine} board selected by default. ${NC} " 
+				break 
+				;;
+		esac
+
+	done
+	
+	echo -e "${GREEN}${distro} ${machine} selected.${NC}"
+}
+
+setup_build_environment() {
+
+	select_distro_machine
+	
+	cd ${YP_DIR}
+	DISTRO=$distro MACHINE=$machine source sources/init-build-env build
+
+	# Select image core-image-minimal nvt-image-qt5  
+	imagename=core-image-minimal
+
+	if [[ "$machine" == "ma35d1-evb" ]]; then
+  		imagename=nvt-image-qt5
+	fi
+}
+
+build_image_recipe() {
+	echo -e "${GREEN}start building $imagename ...${NC}"
+	until bitbake $imagename; do
+		echo -e "${RED}bitbake $imagename failed. retrying ...${NC}"
+		echo -e "${YELLOW}bitbake do_fetch failed? offline build enabled? Hah Hah! hnnn, got it!!!${NC}"
+		sleep 5s
+	done
+	echo -e "${GREEN}building $imagename succeeded!${NC}"
+}
 
 generate_sdk() {
-  # SDK generation
-  echo -e "${GREEN}start generating SDK ...${NC}"
-  until bitbake $imagename -c populate_sdk; do
-    echo -e "${RED}populate SDK for ${imagename} failed. retry...${NC}"
-    sleep 5s
-  done
-  echo -e "${GREEN}generating SDK succeeded!${NC}"
+
+	# [ ! -f ${YP_DIR}/build/tmp-glibc/deploy/sdk/oecore-x86_64-aarch64-toolchain-5.5-dunfell.sh ]
+
+	if [ "$SKIP_SDK_GENERATION" == false ]; then
+		echo -e "${GREEN}start generating SDK ...${NC}"
+		until bitbake $imagename -c populate_sdk; do
+			echo -e "${RED}populate SDK for ${imagename} failed. retry...${NC}"
+			sleep 5s
+		done
+		echo -e "${GREEN}generating SDK succeeded!${NC}"
+	fi
 }
 
-if [ ! -f ${YP}/build/tmp-glibc/deploy/sdk/oecore-x86_64-aarch64-toolchain-5.5-dunfell.sh ]; then
-  echo "uncomment to generate SDK"
-  generate_sdk
+uninstall_tools() {
+	if [[ "$SKIP_UNINSTALLING_TOOLS" == false ]]; then
+		# Force uninstalling unnecessary packages to accelerate system update
+		sudo apt --purge remove firefox* thunderbird* libreoffice* rhythmbox*
+		sed -i 's/^SKIP_UNINSTALLING_TOOLS.*/SKIP_UNINSTALLING_TOOLS=true/' ${YP_DIR}/build/build.conf
+	fi
+}
+
+system_update() {
+	if [[ "$SKIP_SYSTEM_UPDATE" == false ]]; then
+		sudo apt update
+		sed -i 's/^SKIP_SYSTEM_UPDATE.*/SKIP_SYSTEM_UPDATE=true/' ${YP_DIR}/build/build.conf 
+	fi
+}
+
+system_upgrade() {
+	if [[ "$SKIP_SYSTEM_UPGRADE" == false ]]; then
+		sudo apt upgrade
+		sed -i 's/^SKIP_SYSTEM_UPGRADE.*/SKIP_SYSTEM_UPGRADE=true/' ${YP_DIR}/build/build.conf 
+	fi
+}
+
+enable_offline_build() {
+
+	declare -A ASSOC_ARRAY_REPO_RECP 
+
+	ARM_TRUSTED_FIRMWARE_REPO="${YP_DIR}/downloads/git2/github.com.OpenNuvoton.MA35D1_arm-trusted-firmware-v2.3.git"
+	ARM_TRUSTED_FIRMWARE_RECP="${YP_DIR}/sources/meta-ma35d1/recipes-bsp/tf-a/tf-a-ma35d1_2.3.bb"
+	ASSOC_ARRAY_REPO_RECP[$ARM_TRUSTED_FIRMWARE_REPO]=$ARM_TRUSTED_FIRMWARE_RECP
+
+	LINUX_REPO="${YP_DIR}/downloads/git2/github.com.OpenNuvoton.MA35D1_linux-5.4.y.git"
+	LINUX_RECP="${YP_DIR}/sources/meta-ma35d1/recipes-kernel/linux/linux-ma35d1_5.4.110.bb"
+	ASSOC_ARRAY_REPO_RECP[$LINUX_REPO]=$LINUX_RECP
+
+	NUWRITER_REPO="${YP_DIR}/downloads/git2/github.com.OpenNuvoton.MA35D1_NuWriter.git"
+	NUWRITER_RECP="${YP_DIR}/sources/meta-ma35d1/recipes-devtools/python/python3-nuwriter_0.90.0.bb"
+	ASSOC_ARRAY_REPO_RECP[$NUWRITER_REPO]=$NUWRITER_RECP 
+
+	OPTEE_REPO="${YP_DIR}/downloads/git2/github.com.OpenNuvoton.MA35D1_optee_os-v3.9.0.git"
+	OPTEE_RECP="${YP_DIR}/sources/meta-ma35d1/recipes-security/optee/optee-os-ma35d1_3.9.0.bb"
+	ASSOC_ARRAY_REPO_RECP[$OPTEE_REPO]=$OPTEE_RECP 
+
+	M4PROJ_REPO="${YP_DIR}/downloads/git2/github.com.OpenNuvoton.MA35D1_RTP_BSP.git"
+	M4PROJ_RECP="${YP_DIR}/sources/meta-ma35d1/recipes-bsp/m4proj/m4proj_0.90.bb"
+	ASSOC_ARRAY_REPO_RECP[$M4PROJ_REPO]=$M4PROJ_RECP
+
+	UBOOT_REPO="${YP_DIR}/downloads/git2/github.com.OpenNuvoton.MA35D1_u-boot-v2020.07.git"
+	UBOOT_RECP="${YP_DIR}/sources/meta-ma35d1/recipes-bsp/u-boot/u-boot-ma35d1_2020.07.bb"
+	ASSOC_ARRAY_REPO_RECP[$UBOOT_REPO]=$UBOOT_RECP
+
+	for repo in "${!ASSOC_ARRAY_REPO_RECP[@]}"
+	do
+		#echo -e "${GREEN}repo: $repo${NC}"
+		#echo -e "${YELLOW}recipe: ${ASSOC_ARRAY_REPO_RECP[$repo]}${NC}"
+		cd $repo
+		if [[ "$ENABLE_OFFLINE_BUILD" == true ]]; then
+			sed -i 's/^SRCREV.*/SRCREV = "'$(git rev-parse HEAD)'"/' ${ASSOC_ARRAY_REPO_RECP[$repo]}
+		else
+			sed -i 's/^SRCREV.*/SRCREV = "master"/' ${ASSOC_ARRAY_REPO_RECP[$repo]} 
+		fi
+		#cat ${ASSOC_ARRAY_REPO_RECP[$repo]}
+	done
+
+
+	if grep -q "BB_NO_NETWORK" ${YP_DIR}/build/conf/local.conf; then 
+		#echo -e "${RED}BB_NO_NETWORK found${NC}"
+		if [[ "$ENABLE_OFFLINE_BUILD" == false ]]; then 
+			sed -i 's/^BB_NO_NETWORK.*/BB_NO_NETWORK = "0"/' ${YP_DIR}/build/conf/local.conf
+		else
+			sed -i 's/^BB_NO_NETWORK.*/BB_NO_NETWORK = "1"/' ${YP_DIR}/build/conf/local.conf
+		fi
+	else
+		#echo -e "${RED}BB_NO_NETWORK not found${NC}"
+		if [[ "$ENABLE_OFFLINE_BUILD" == false ]]; then
+			echo 'BB_NO_NETWORK = "0"' >> ${YP_DIR}/build/conf/local.conf 
+			#sed '$ a BB_NO_NETWORK = "0"' ${YP_DIR}/build/conf/local.conf
+		else
+			echo 'BB_NO_NETWORK = "1"' >> ${YP_DIR}/build/conf/local.conf
+			#sed '$ a BB_NO_NETWORK = "1"' ${YP_DIR}/build/conf/local.conf
+		fi
+	fi
+	
+	
+	#echo -e "${YELLOW}enable offline build in local.conf whether or not?${NC}"
+	#cat ${YP_DIR}/build/conf/local.conf
+
+	cd ${YP_DIR}/build
+
+	#  if [[ "$1" == "N" ]]; then 
+	#    bitbake u-boot-ma35d1 -c cleansstate 
+	#    bitbake m4proj -c cleansstate
+	#    bitbake linux-ma35d1 -c cleansstate
+	#  fi
+}
+
+confirm_offline_build() {
+
+	if [[ "$YP_BUILD_DONE" == true ]]; then
+		echo -e "${GREEN}script detects that Yocto has completed image build ever, thus enabling offline build can accelerate image build."
+		echo -e "${YELLOW}Disabling offline build? [Y]es/[n]o, default: NO, disabling offline build means bitbake will fetch the latest code."
+		
+		while [ true ];
+		do
+			read -s -n 1 -t 15 k
+
+			if [[ "$k" == "Y" ]]; then
+				ENABLE_OFFLINE_BUILD=false
+				sed -i 's/^ENABLE_OFFLINE_BUILD.*/ENABLE_OFFLINE_BUILD=false/' ${YP_DIR}/build/build.conf
+				echo -e "${GREEN}offline build disabled${NC}"
+				break;
+			else
+				ENABLE_OFFLINE_BUILD=true
+				sed -i 's/^ENABLE_OFFLINE_BUILD.*/ENABLE_OFFLINE_BUILD=true/' ${YP_DIR}/build/build.conf
+				echo -e "${GREEN}offline build enabled${NC}"
+				break;
+			fi
+
+			echo -e "${GREEN}no answer for confirming offline build, offline build enabled${NC}"
+			break
+			
+
+		done
+		
+		enable_offline_build
+	else
+		echo -e "${YELLOW}force enabling offline build${NC}"
+		if [[ -d ${YP_DIR}/downloads ]]; then
+				ENABLE_OFFLINE_BUILD=true
+				sed -i 's/^ENABLE_OFFLINE_BUILD.*/ENABLE_OFFLINE_BUILD=true/' ${YP_DIR}/build/build.conf
+		fi
+
+	fi
+}
+
+
+
+if [ "$1" ]; then
+	echo -e "${RED}Yocto directory presented explicitly, that means the script will create it${NC}"
+	
+	if [[ -d "$1" ]]; then
+		echo -e "${YELLOW}but script detects the directory is already existing!, then it will fetch Yocto into this directory: $1.${NC}"
+		CURDIR="$1"
+		whether_directory_empty_or_not
+	else
+		# OK
+		YP_DIR="$1"
+		echo -e "${GREEN}script creates the Yocto directory: ${YP_DIR}.${NC}"
+		mkdir -p ${YP_DIR} ${YP_DIR}/build
+		generate_default_build_configuration
+	fi
+	
+else
+	CURDIR=$(dirname $SCRIPT_NAME)
+	echo -e "${YELLOW}Yocto directory not presented, implicitly means that script will fetch Yocto into current directory: $CURDIR${NC}"
+	whether_directory_empty_or_not
 fi
 
-# Offline build
-echo -e "${YELLOW}CAUTION: offline build can accelerate the next time image generation, but maybe miss the important fixes if the SOC vendor updated the repositories!${NC}"
-echo -e "${GREEN}Enable offline build? Type [y]es or [n]o ..., by default, always enable offline build!${NC}"
 
-while [ true ]; do
-  read -s -n 1 -t 5 k
 
-  case $k in
-    n* ) echo -e "${GREEN}disable offline build${NC}"
-         offline_build "N"
-         ;;
-    y* ) echo -e "${GREEN}enable offline build${NC}"
-         offline_build "Y"
-         break
-         ;;
-    *  ) echo -e "${YELLOW}enable offline build automatically by default.${NC} "
-         offline_build "N"
-         break
-         ;;
-  esac
+if [[ "$YP_INIT_DONE" == false ]]; then
+	echo -e "${YELLOW}Yocto is not yet initialized${NC}"
+		
+	uninstall_tools
+	system_update
+	system_upgrade
+	install_system_tools
+	install_yocto_tools
+	install_ma35d1_tools
+	#install_ma35d1_docer
+	install_repo
+	init_repo
+	sync_repo
+	configure_git_account
+	setup_build_environment
+	confirm_offline_build
+	build_image_recipe
+	generate_sdk
+	
+else
+	# if repo sync succeeded and change revision to a new higher number, but bitbake do_fetched failed subsequenced
+	sync_repo
+	setup_build_environment
+	confirm_offline_build
+	build_image_recipe
+	generate_sdk
+fi
 
-done
 
-echo "All done. Press any key to continue..."
 
 # devtool build-image $imagename
+
