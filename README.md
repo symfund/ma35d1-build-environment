@@ -70,7 +70,7 @@ Offline build can accelerate the next time image generation, provided that the b
 
 In another words, **disabling offline build** lead bitbake to fetch latest code.
 
-To **force enabling offline build on another machine** without completing setting up build environment at all, follow the subsequent steps 
+To **force enabling offline build on another machine** that does not initialize the build environment at all, follow the subsequent steps 
 1. prepare an empty directory /path/to/yocto
 2. change current directory to /path/to/yocto, 
 3. copy the downloaded dependency package **downloads.tar.gz** to this directory /path/to/yocto
