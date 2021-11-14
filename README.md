@@ -9,8 +9,7 @@ Ubuntu Desktop 20.04.3 64-bit LTS
 2. Install Ubuntu Desktop 20.04.3 64-bit LTS
 3. Connect the computer to network
 4. Fetch this script
-5. Execute this script
-   Peform the below command, with or without argument **YP_DIR**. If **YP_DIR** does not exist, script will fetch remote repositories into current directory.
+5. Execute this script, with or without argument **YP_DIR**. If **YP_DIR** does not exist, script will fetch remote repositories into current directory.
 
 ```bash
   $ source /path/to/setup_ma35d1.sh <YP_DIR>
