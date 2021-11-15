@@ -161,23 +161,24 @@ init_repo() {
 
 sync_repo() {
 	cd ${YP_DIR}
-	
+
 	# offline build enabled?
 	if [[ "$ENABLE_OFFLINE_BUILD" == false ]]; then
 		if [[ "$SKIP_REPO_SYNC" == false ]]; then
 			until repo sync --force-sync 
 			do
-		  		echo -e "${RED}repo sync failed, retrying ... ${NC}"
+				echo -e "${RED}repo sync failed, retrying ... ${NC}"
 
-		  		if [[ -d ${YP_DIR}/sources ]]; then
-						echo -e "${RED}The script detects that repo has completed the synchronization ever, skips sync this time.${NC}" 
-						break
-		  		fi
+				if [[ -d ${YP_DIR}/sources ]]; then
+					echo -e "${RED}The script detects that repo has completed the synchronization ever, skips sync this time.${NC}" 
+					break
+				fi
 			done
 			echo -e "${YELLOW}repo sync succeeded.${NC}"
+		else
+			echo -e "${YELLOW}It makes no sense skipping 'repo sync' with offline build disabled. 'SKIP_REPO_SYNC=true' should not reach here.${NC}"
+			echo -e "${YELLOW}However, user wants to skip repo sync temporarily.${NC}"
 		fi
-	else
-		echo -e "${RED}It makes no sense 'repo sync' with offline build enabled.${NC}"
 	fi
 }
 
@@ -278,12 +279,15 @@ setup_build_environment() {
 
 build_image_recipe() {
 	echo -e "${GREEN}start building $imagename ...${NC}"
+	
 	until bitbake $imagename; do
 		echo -e "${RED}bitbake $imagename failed. retrying ...${NC}"
 		echo -e "${YELLOW}bitbake do_fetch failed? offline build enabled? Hah Hah! hnnn, got it!!!${NC}"
 		sleep 5s
 	done
+	
 	echo -e "${GREEN}building $imagename succeeded!${NC}"
+	sed -i 's/^YP_BUILD_DONE.*/YP_BUILD_DONE=true/' ${YP_DIR}/build/build.conf
 }
 
 generate_sdk() {
