@@ -474,9 +474,9 @@ if [[ "$YP_INIT_DONE" == false ]]; then
 	install_ma35d1_tools
 	#install_ma35d1_docer
 	install_repo
+	configure_git_account
 	init_repo
 	sync_repo
-	configure_git_account
 	setup_build_environment
 	confirm_offline_build
 	build_image_recipe
