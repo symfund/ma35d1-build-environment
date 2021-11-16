@@ -45,16 +45,19 @@ CURDIR=""
 
 
 generate_default_build_configuration() {
-	touch ${YP_DIR}/build/build.conf
 
-	echo "SKIP_UNINSTALLING_TOOLS=false" >> ${YP_DIR}/build/build.conf
-	echo "SKIP_SYSTEM_UPDATE=false" >> ${YP_DIR}/build/build.conf
-	echo "SKIP_SYSTEM_UPGRADE=false" >> ${YP_DIR}/build/build.conf
-	echo "SKIP_REPO_SYNC=false" >> ${YP_DIR}/build/build.conf
-	echo "SKIP_SDK_GENERATION=false" >> ${YP_DIR}/build/build.conf
-	echo "YP_INIT_DONE=false" >> ${YP_DIR}/build/build.conf
-	echo "YP_BUILD_DONE=false" >> ${YP_DIR}/build/build.conf
-	echo "ENABLE_OFFLINE_BUILD=false" >> ${YP_DIR}/build/build.conf
+	if [ ! -f ${YP_DIR}/build/build.conf ]; then
+		touch ${YP_DIR}/build/build.conf
+
+		echo "SKIP_UNINSTALLING_TOOLS=false" >> ${YP_DIR}/build/build.conf
+		echo "SKIP_SYSTEM_UPDATE=false" >> ${YP_DIR}/build/build.conf
+		echo "SKIP_SYSTEM_UPGRADE=false" >> ${YP_DIR}/build/build.conf
+		echo "SKIP_REPO_SYNC=false" >> ${YP_DIR}/build/build.conf
+		echo "SKIP_SDK_GENERATION=false" >> ${YP_DIR}/build/build.conf
+		echo "YP_INIT_DONE=false" >> ${YP_DIR}/build/build.conf
+		echo "YP_BUILD_DONE=false" >> ${YP_DIR}/build/build.conf
+		echo "ENABLE_OFFLINE_BUILD=false" >> ${YP_DIR}/build/build.conf
+	fi
 	
 	source ${YP_DIR}/build/build.conf
 }
