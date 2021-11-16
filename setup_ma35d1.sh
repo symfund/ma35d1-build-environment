@@ -69,26 +69,14 @@ whether_directory_empty_or_not() {
 		# script running in previous Yocto build directory, weak condition
 		if [[ -f ${CURDIR}/bitbake-cookerdaemon.log ]]; then
 			echo -e "${YELLOW}script is running in previous build directory${NC}"
-			source ${CURDIR}/build.conf
-			
-			echo ""
-			cat ${CURDIR}/build.conf
-			echo ""
-			
 			YP_DIR="${CURDIR}/.."
-			echo -e "${GREEN}Yocto directory is ${YP_DIR}${NC}"
+			generate_default_build_configuration
 		else
 			# ? YP_DIR/build>downloads,.repo>sources
 			if [[ -d ${CURDIR}/build && -f ${CURDIR}/build/bitbake-cookerdaemon.log ]]; then
 				echo -e "${YELLOW}script is running in upper level of the Yocto build directory${NC}"
-				source ${CURDIR}/build/build.conf
-				
-				echo ""
-				cat ${CURDIR}/build/build.conf
-				echo ""
-				
 				YP_DIR=${CURDIR}
-				echo -e "${GREEN}Yocto directory is ${YP_DIR}${NC}"
+				generate_default_build_configuration
 			else
 				YP_DIR=${CURDIR}
 				echo -e "${GREEN}Yocto directory is ${YP_DIR}${NC}"
@@ -98,10 +86,8 @@ whether_directory_empty_or_not() {
 		fi
 		
 	else
-		# OK
 		echo -e "${YELLOW}Current directory is empty.${NC}"
 		YP_DIR=${CURDIR}
-		echo -e "${GREEN}Yocto directory is ${YP_DIR}${NC}"
 		mkdir -p ${YP_DIR}/build
 		generate_default_build_configuration
 	fi
@@ -148,17 +134,20 @@ install_repo() {
 
 init_repo() {
 	if [ ! -d ${YP_DIR}/sources ]; then
-	  cd ${YP_DIR}
+		cd ${YP_DIR}
 
-	  export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
-	  until repo init -u git://github.com/OpenNuvoton/MA35D1_Yocto-v3.1.3.git -m meta-ma35d1/base/ma35d1.xml
-	  do
-		echo -e "${RED}repo init failed! retrying ...${NC}"
-	  done
-	  echo -e "${GREEN}repo initialized successfully.${NC}"
-	  
-	  sed -i 's/^YP_INIT_DONE.*/YP_INIT_DONE=true/' ${YP_DIR}/build/build.conf
-
+		export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
+		
+		until repo init -u git://github.com/OpenNuvoton/MA35D1_Yocto-v3.1.3.git -m meta-ma35d1/base/ma35d1.xml
+		do
+			echo -e "${RED}repo init failed! retrying ...${NC}"
+		done
+		
+		echo -e "${GREEN}repo initialized successfully.${NC}"
+		sed -i 's/^YP_INIT_DONE.*/YP_INIT_DONE=true/' ${YP_DIR}/build/build.conf
+	else
+		echo -e "${YELLOW}Migrating offline build to another machine${NC}"
+		sed -i 's/^YP_INIT_DONE.*/YP_INIT_DONE=true/' ${YP_DIR}/build/build.conf
 	fi
 }
 
@@ -436,6 +425,7 @@ confirm_offline_build() {
 			echo -e "${YELLOW}force enabling offline build silently${NC}"
 			ENABLE_OFFLINE_BUILD=true
 			sed -i 's/^ENABLE_OFFLINE_BUILD.*/ENABLE_OFFLINE_BUILD=true/' ${YP_DIR}/build/build.conf
+			enable_offline_build
 		fi
 
 	fi
