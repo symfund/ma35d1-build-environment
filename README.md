@@ -1,5 +1,5 @@
 # Setting up Yocto Build Environment for MA35D1 without Docker
- an unattended bash script to setup build  environment in native Linux without docker inside for ma35d1
+ an unattended script to setup build environment for ma35d1 on native Linux without inside docker, anytime anywhere run it!
 
 # Host OS
 Ubuntu Desktop 20.04.3 64-bit LTS
