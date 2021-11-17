@@ -66,7 +66,7 @@ Once the image is built out, the script will generate SDK for individual develop
 Enabling features in image means changing the **EXTRA_IMAGE_FEATURES** and **IMAGE_INSTALL** in local build configuration file **${YP_DIR}/build/conf/local.conf**
 
 # Offline build
-Offline build can accelerate the next time image generation, provided that the bitbake completes its image recipe at least one time. However, if server has updated the repositories, bitbake will miss the latest important fixes. 
+Offline build can accelerate the next-time image generation, provided that the bitbake completes its image recipe at least one time. However, if server has updated the repositories, bitbake will miss the latest important fixes. 
 
 In another words, **disabling offline build** lead bitbake to fetch latest code.
 
