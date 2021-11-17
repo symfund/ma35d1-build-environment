@@ -348,39 +348,27 @@ enable_offline_build() {
 
 	for repo in "${!ASSOC_ARRAY_REPO_RECP[@]}"
 	do
-		#echo -e "${GREEN}repo: $repo${NC}"
-		#echo -e "${YELLOW}recipe: ${ASSOC_ARRAY_REPO_RECP[$repo]}${NC}"
-		cd $repo
 		if [[ "$ENABLE_OFFLINE_BUILD" == true ]]; then
-			sed -i 's/^SRCREV.*/SRCREV = "'$(git rev-parse HEAD)'"/' ${ASSOC_ARRAY_REPO_RECP[$repo]}
+			sed -i 's/^SRCREV.*/SRCREV = "'$(git -C ${repo} rev-parse HEAD)'"/' ${ASSOC_ARRAY_REPO_RECP[$repo]}
 		else
 			sed -i 's/^SRCREV.*/SRCREV = "master"/' ${ASSOC_ARRAY_REPO_RECP[$repo]} 
 		fi
-		#cat ${ASSOC_ARRAY_REPO_RECP[$repo]}
 	done
 
 
 	if grep -q "BB_NO_NETWORK" ${YP_DIR}/build/conf/local.conf; then 
-		#echo -e "${RED}BB_NO_NETWORK found${NC}"
 		if [[ "$ENABLE_OFFLINE_BUILD" == false ]]; then 
 			sed -i 's/^BB_NO_NETWORK.*/BB_NO_NETWORK = "0"/' ${YP_DIR}/build/conf/local.conf
 		else
 			sed -i 's/^BB_NO_NETWORK.*/BB_NO_NETWORK = "1"/' ${YP_DIR}/build/conf/local.conf
 		fi
 	else
-		#echo -e "${RED}BB_NO_NETWORK not found${NC}"
 		if [[ "$ENABLE_OFFLINE_BUILD" == false ]]; then
-			echo 'BB_NO_NETWORK = "0"' >> ${YP_DIR}/build/conf/local.conf 
-			#sed '$ a BB_NO_NETWORK = "0"' ${YP_DIR}/build/conf/local.conf
+			sed -i -e '$aBB_NO_NETWORK = "0"' ${YP_DIR}/build/conf/local.conf
 		else
-			echo 'BB_NO_NETWORK = "1"' >> ${YP_DIR}/build/conf/local.conf
-			#sed '$ a BB_NO_NETWORK = "1"' ${YP_DIR}/build/conf/local.conf
+			sed -i -e '$aBB_NO_NETWORK = "1"' ${YP_DIR}/build/conf/local.conf
 		fi
 	fi
-	
-	
-	#echo -e "${YELLOW}enable offline build in local.conf whether or not?${NC}"
-	#cat ${YP_DIR}/build/conf/local.conf
 
 	cd ${YP_DIR}/build
 
@@ -401,7 +389,7 @@ confirm_offline_build() {
 		do
 			read -s -n 1 -t 15 k
 
-			if [[ "$k" == "Y" ]]; then
+			if [[ "$k" == "Y" || "$k" == "y" ]]; then
 				ENABLE_OFFLINE_BUILD=false
 				sed -i 's/^ENABLE_OFFLINE_BUILD.*/ENABLE_OFFLINE_BUILD=false/' ${YP_DIR}/build/build.conf
 				echo -e "${GREEN}offline build disabled${NC}"
