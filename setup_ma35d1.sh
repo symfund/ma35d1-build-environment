@@ -10,6 +10,7 @@
 
 
 # default distro & machine
+board=IOT
 distro=nvt-ma35d1
 machine=ma35d1-iot
 imagename=core-image-minimal
@@ -219,12 +220,74 @@ configure_git_account() {
 	fi
 }
 
-select_distro_machine() {
+select_machine() {
+	# If exists the local build configuration file local.conf, read machine from that
 
-	# If exists the local build configuration file local.conf, read distro and machine from that
+	echo -e "${YELLOW}Select which machine to be built... SOM or SOM-1GB?${NC}" 
+	echo -e "${GREEN}Type '1' for SOM-1GB, others for SOM. default: [ 0 ], SOM will be selected${NC}"
+
+	while [ true ];
+	do
+		read -s -n 1 -t 15 k
+
+		case $k in
+			1* )
+				machine=ma35d1-som-1gb
+				echo -e "${GREEN}SOM 1GB machine selected!${NC}"
+				break 
+				;;
+			0* )
+				machine=ma35d1-som
+				echo -e "${GREEN}SOM machine selected!${NC}"
+				break 
+				;;
+			*  )
+				machine=ma35d1-som
+				echo -e " ${RED}No machine specified, machine SOM selected by default. ${NC} " 
+				break 
+				;;
+		esac
+
+	done
+}
+
+select_image() {
+	# If exists the local build configuration file local.conf, read image name from that
+
+	echo -e "${YELLOW}Select which image to be built... nvt-image-qt5 or core-image-minimal?${NC}"
+	echo -e "${GREEN}Type 'n' for nvt-image-qt5, 'c' for core-image-minimal. default: [ n ], nvt-image-qt5 will be selected${NC}"
+
+	while [ true ];
+	do
+		read -s -n 1 -t 15 k
+
+		case $k in
+			n* )
+				imagename=nvt-image-qt5
+				echo -e "${GREEN}nvt-image-qt5 image selected!${NC}"
+				break 
+				;;
+			c* )
+				imagename=core-image-minimal
+				echo -e "${GREEN}core-image-minimal image selected!${NC}"
+				break 
+				;;
+			*  )
+				imagename=core-image-minimal
+				echo -e " ${RED}No image specified, core-image-minimal selected by default. ${NC} " 
+				break 
+				;;
+		esac
+
+	done
+}
+
+select_board() {
+
+	# If exists the local build configuration file local.conf, read board from that
 
 	echo -e "${YELLOW}Select which board to build ... i: IoT e: EVB s: SOM ${NC}" 
-	echo -e "${GREEN}Type 'i', 'e', or 's' ... default: ${machine} board selected${NC}"
+	echo -e "${GREEN}Type 'i', 'e', or 's' ... default: [ i ] IOT board will be selected${NC}"
 
 	while [ true ];
 	do
@@ -232,15 +295,15 @@ select_distro_machine() {
 
 		case $k in
 			i* )
-				distro=nvt-ma35d1 machine=ma35d1-iot 
+				board=IOT distro=nvt-ma35d1 machine=ma35d1-iot 
 				break 
 				;;
 			e* )
-				distro=nvt-ma35d1-directfb machine=ma35d1-evb 
+				board=EVB distro=nvt-ma35d1-directfb machine=ma35d1-evb 
 				break 
 				;;
 			s* )
-				distro=nvt-ma35d1 machine=ma35d1-som 
+				board=SOM distro=nvt-ma35d1 machine=ma35d1-som 
 				break 
 				;;
 			*  )
@@ -251,22 +314,22 @@ select_distro_machine() {
 
 	done
 	
-	echo -e "${GREEN}${distro} ${machine} selected.${NC}"
+	if [[ "$board" == "EVB" ]]; then
+  		select_image
+	fi
+	
+	if [[ "$board" == "SOM" ]]; then
+  		select_machine
+	fi
 }
 
 setup_build_environment() {
 
-	select_distro_machine
+	select_board
 	
 	cd ${YP_DIR}
 	DISTRO=$distro MACHINE=$machine source sources/init-build-env build
 
-	# Select image core-image-minimal nvt-image-qt5  
-	imagename=core-image-minimal
-
-	if [[ "$machine" == "ma35d1-evb" ]]; then
-  		imagename=nvt-image-qt5
-	fi
 }
 
 build_image_recipe() {
