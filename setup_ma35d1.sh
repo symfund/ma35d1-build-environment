@@ -13,6 +13,7 @@
 board=IOT
 distro=nvt-ma35d1
 machine=ma35d1-iot
+# It is safe to set imagename to "core-image-minimal"
 imagename=core-image-minimal
 
 
@@ -243,7 +244,8 @@ select_machine() {
 				;;
 			*  )
 				machine=ma35d1-som
-				echo -e " ${RED}No machine specified, machine SOM selected by default. ${NC} " 
+				echo -e "${YELLOW}No machine specified, SOM machine selected by default.${NC}"
+				sleep 5s 
 				break 
 				;;
 		esac
@@ -273,8 +275,9 @@ select_image() {
 				break 
 				;;
 			*  )
-				imagename=core-image-minimal
-				echo -e " ${RED}No image specified, core-image-minimal selected by default. ${NC} " 
+				imagename=nvt-image-qt5
+				echo -e "${YELLOW}No image specified, nvt-image-qt5 selected by default.${NC}" 
+				sleep 5s
 				break 
 				;;
 		esac
@@ -294,20 +297,22 @@ select_board() {
 		read -s -n 1 -t 15 k
 
 		case $k in
+			# for safty consideration, set imagename to "core-image-minimal" by default
 			i* )
-				board=IOT distro=nvt-ma35d1 machine=ma35d1-iot 
+				board=IOT distro=nvt-ma35d1 machine=ma35d1-iot imagename=core-image-minimal
 				break 
 				;;
 			e* )
-				board=EVB distro=nvt-ma35d1-directfb machine=ma35d1-evb 
+				board=EVB distro=nvt-ma35d1-directfb machine=ma35d1-evb imagename=core-image-minimal
 				break 
 				;;
 			s* )
-				board=SOM distro=nvt-ma35d1 machine=ma35d1-som 
+				board=SOM distro=nvt-ma35d1 machine=ma35d1-som imagename=core-image-minimal
 				break 
 				;;
 			*  )
-				echo -e " ${RED}No board specified, ${machine} board selected by default. ${NC} " 
+				echo -e "${YELLOW}No board specified, board: ${board}, machine: ${machine}, distro: ${distro}, imagename: ${imagename} selected by default.${NC}"
+				sleep 5s
 				break 
 				;;
 		esac
