@@ -76,11 +76,11 @@ To **force enabling offline build on another machine** that does not initialize 
 5. launch this script.
 
 ```
-mkdir -p /path/to/yocto
-cd /path/to/yocto
-copy /path/to/downloads.tar.gz $PWD
-tar xzvf downloads.tar.gz
-source /path/to/setup_ma35d1.sh
+$ mkdir -p /path/to/yocto
+$ cd /path/to/yocto
+$ cp /path/to/downloads.tar.gz $PWD
+$ tar xzvf downloads.tar.gz
+$ source /path/to/setup_ma35d1.sh
 ```
 
 To download all the dependency packages **downloads.tar.gz** without actually building image, issue the below command
